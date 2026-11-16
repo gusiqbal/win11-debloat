@@ -1,0 +1,16 @@
+name: check
+on: [push, pull_request]
+
+jobs:
+  parse:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Parse debloat.ps1 with Windows PowerShell 5.1
+        shell: powershell
+        run: |
+          $errors = $null
+          [System.Management.Automation.Language.Parser]::ParseFile("$PWD\debloat.ps1", [ref]$null, [ref]$errors) | Out-Null
+          if ($errors) { $errors | Out-String | Write-Host; exit 1 }
+          if ((Get-Content debloat.ps1 -Raw) -match '[^\x00-\x7F]') { Write-Host 'debloat.ps1 must stay ASCII'; exit 1 }
+          Write-Host 'OK'
