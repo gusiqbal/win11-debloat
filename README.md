@@ -11,7 +11,7 @@ Menu sederhana untuk mengurangi pemakaian RAM saat idle di Windows 11, tanpa mem
 | Menu | Fungsi |
 |---|---|
 | 1 | Debloat. Membuat restore point dulu, lalu menghapus aplikasi dan mematikan proses background. Aman dijalankan ulang. |
-| 2 | Menampilkan RAM yang dipakai dan 15 proses paling boros. |
+| 2 | Menampilkan RAM yang dipakai, 15 proses paling boros, dan aplikasi mana yang memakai msedgewebview2. |
 | 3 | Opsional: gabungkan proses svchost (lihat di bawah). |
 | 4 | Batalkan menu 3. |
 | 5 | Opsional: matikan Windows AI yang menjalankan WorkloadsSessionHost (lihat di bawah). |
@@ -59,6 +59,8 @@ Buka Task Manager > Performance > Memory.
 - **In use**: angka yang penting.
 - **Cached**: RAM yang dipakai Windows supaya lebih cepat. Langsung dilepas saat aplikasi atau game butuh.
 - **Hardware reserved**: RAM untuk GPU terintegrasi. Diatur di BIOS atau aplikasi bawaan pabrik, bukan lewat script ini.
+
+**msedgewebview2** bukan browser Edge. Komponen ini dipakai aplikasi lain untuk menampilkan halaman web, dan setiap aplikasi menjalankan beberapa proses sekaligus. Menu 2 menunjukkan aplikasi pemiliknya. Jangan hapus WebView2, karena aplikasi yang memakainya akan rusak. Tutup atau hapus aplikasi pemiliknya saja kalau tidak dipakai.
 
 RAM idle yang tinggi tidak mengurangi fps. Windows mengambil kembali memori dari aplikasi yang diam saat game membutuhkannya.
 

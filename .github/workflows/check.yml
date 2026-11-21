@@ -14,3 +14,10 @@ jobs:
           if ($errors) { $errors | Out-String | Write-Host; exit 1 }
           if ((Get-Content debloat.ps1 -Raw) -match '[^\x00-\x7F]') { Write-Host 'debloat.ps1 must stay ASCII'; exit 1 }
           Write-Host 'OK'
+      - name: Run menu 2 (Show-Memory) on a real Windows machine
+        shell: powershell
+        run: |
+          $ast = [System.Management.Automation.Language.Parser]::ParseFile("$PWD\debloat.ps1", [ref]$null, [ref]$null)
+          $fn = $ast.Find({ param($n) $n -is [System.Management.Automation.Language.FunctionDefinitionAst] -and $n.Name -eq 'Show-Memory' }, $true)
+          . ([scriptblock]::Create($fn.Extent.Text))
+          Show-Memory

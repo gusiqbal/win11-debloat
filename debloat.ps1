@@ -75,6 +75,24 @@ function Show-Memory {
     Get-Process | Group-Object Name |
         Select-Object Name, @{ n = 'MB'; e = { [int](($_.Group | Measure-Object WorkingSet64 -Sum).Sum / 1MB) } } |
         Sort-Object MB -Descending | Select-Object -First 15 | Format-Table -AutoSize | Out-Host
+
+    # msedgewebview2 bukan browser Edge: aplikasi lain memakainya untuk menampilkan halaman web.
+    # Telusuri proses induknya sampai ketemu aplikasi pemiliknya.
+    $procs = Get-CimInstance Win32_Process
+    $webview = $procs | Where-Object Name -eq 'msedgewebview2.exe'
+    if (-not $webview) { return }
+    Write-Host 'msedgewebview2 per aplikasi pemilik:'
+    $webview | ForEach-Object {
+        $owner = $_
+        while ($owner -and $owner.Name -eq 'msedgewebview2.exe') {
+            $parentId = $owner.ParentProcessId
+            $owner = $procs | Where-Object ProcessId -eq $parentId
+        }
+        $app = if ($owner) { $owner.Name } else { '(induk sudah tertutup)' }
+        [pscustomobject]@{ App = $app; MB = $_.WorkingSetSize / 1MB }
+    } | Group-Object App |
+        Select-Object Name, @{ n = 'MB'; e = { [int]($_.Group | Measure-Object MB -Sum).Sum } } |
+        Sort-Object MB -Descending | Format-Table -AutoSize | Out-Host
 }
 
 $svchostKey = 'HKLM:\SYSTEM\CurrentControlSet\Control'
