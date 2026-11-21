@@ -86,6 +86,8 @@ while ($true) {
   [2] Cek pemakaian RAM
   [3] Opsional: gabungkan proses svchost
   [4] Batalkan langkah 3
+  [5] Opsional: matikan Windows AI (WorkloadsSessionHost)
+  [6] Batalkan langkah 5
   [0] Keluar
 '@
     switch (Read-Host 'Pilih') {
@@ -100,6 +102,21 @@ while ($true) {
         '4' {
             Set-ItemProperty $svchostKey SvcHostSplitThresholdInKB 3670016 -Type DWord  # bawaan Windows: 3,5 GB
             Write-Host 'Dikembalikan ke bawaan. Restart supaya berlaku.' -ForegroundColor Green
+        }
+        '5' {
+            # Windows AI Fabric Service menjalankan WorkloadsSessionHost, yang bisa menahan beberapa GB RAM.
+            # Harus Disabled: dengan Manual prosesnya dilaporkan tetap muncul. Fitur AI bawaan Windows mungkin tidak jalan.
+            if (Get-Service WSAIFabricSvc -ErrorAction SilentlyContinue) {
+                Stop-Service WSAIFabricSvc -Force -ErrorAction SilentlyContinue
+                Set-Service WSAIFabricSvc -StartupType Disabled
+                Write-Host 'Selesai. Restart supaya berlaku.' -ForegroundColor Green
+            } else { Write-Host 'Layanan WSAIFabricSvc tidak ada di PC ini, tidak ada yang diubah.' }
+        }
+        '6' {
+            if (Get-Service WSAIFabricSvc -ErrorAction SilentlyContinue) {
+                Set-Service WSAIFabricSvc -StartupType Manual  # fitur AI bisa menyalakannya lagi saat perlu
+                Write-Host 'Dikembalikan ke Manual. Restart supaya berlaku.' -ForegroundColor Green
+            } else { Write-Host 'Layanan WSAIFabricSvc tidak ada di PC ini, tidak ada yang diubah.' }
         }
         '0' { return }
     }

@@ -14,8 +14,10 @@ Menu sederhana untuk mengurangi pemakaian RAM saat idle di Windows 11, tanpa mem
 | 2 | Menampilkan RAM yang dipakai dan 15 proses paling boros. |
 | 3 | Opsional: gabungkan proses svchost (lihat di bawah). |
 | 4 | Batalkan menu 3. |
+| 5 | Opsional: matikan Windows AI yang menjalankan WorkloadsSessionHost (lihat di bawah). |
+| 6 | Batalkan menu 5. |
 
-4. Restart setelah menu 1 atau 3.
+4. Restart setelah menu 1, 3, 4, 5 atau 6.
 
 Tanpa run.cmd, jalankan dari Terminal (Admin) di folder ini:
 ```powershell
@@ -40,6 +42,18 @@ Di PC dengan RAM lebih dari 3,5 GB, Windows menjalankan setiap layanan dalam pro
 
 Risikonya: kalau satu layanan crash, layanan lain dalam grup yang sama ikut berhenti. Pakai menu 4 untuk kembali ke bawaan Windows.
 
+## Menu 5: matikan Windows AI (WorkloadsSessionHost)
+Di Windows 11 25H2, layanan **WSAIFabricSvc** (Windows AI Fabric Service) bisa menjalankan beberapa proses **WorkloadsSessionHost** yang diam saja tapi menahan RAM sampai beberapa GB. Ini bukan Cortana. Microsoft belum memberi penjelasan resmi.
+
+Menu 5 menghentikan layanan itu dan menyetelnya ke **Disabled**. Manual saja tidak cukup, karena prosesnya dilaporkan tetap muncul.
+
+- **Efek samping:** beberapa fitur AI bawaan Windows mungkin tidak jalan. Belum ada laporan yang menyebut fitur mana persisnya. Belum ada juga laporan bahwa ini mengganggu game, Xbox app atau Defender.
+- **Bukan fitur keamanan.** Defender, Firewall dan Windows Update tidak terpengaruh.
+- **Cek lagi setelah update besar Windows.** Pilih menu 2 untuk memastikan WorkloadsSessionHost tidak muncul lagi.
+- **Membatalkan:** menu 6 mengembalikan layanan ke Manual, sehingga fitur AI bisa menyalakannya lagi saat perlu.
+
+Sumber: [Microsoft Q&A](https://learn.microsoft.com/en-us/answers/questions/5955428/windows-11-25h2-wsaifabricsvc-launches-8-workloads)
+
 ## Cara membaca RAM
 Buka Task Manager > Performance > Memory.
 - **In use**: angka yang penting.
@@ -52,6 +66,7 @@ RAM idle yang tinggi tidak mengurangi fps. Windows mengambil kembali memori dari
 - **Mengembalikan pengaturan:** tekan Win+R, ketik `rstrui`, lalu pilih restore point "Before debloat". Ini mengembalikan pengaturan dan layanan.
 - **Aplikasi yang terhapus:** restore point tidak memasang ulang aplikasi, jadi pasang lagi dari Microsoft Store. Untuk Widgets, cari "Windows Web Experience Pack".
 - **svchost:** pilih menu 4, lalu restart.
+- **Windows AI:** pilih menu 6, lalu restart.
 
 ## Tips tambahan untuk handheld (ROG Xbox Ally X dan sejenisnya)
 1. Aktifkan Xbox full screen experience saat startup di Settings > Gaming. Mode ini tidak memuat desktop Windows.
